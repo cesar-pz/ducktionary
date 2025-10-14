@@ -248,6 +248,7 @@ class WordleGame {
     }
 
     checkGuess() {
+        const FLIP_ANIMATION_DELAY = 100; // milliseconds per tile
         const letterCount = {};
         const guessStatus = Array(this.currentWord.length).fill('absent');
 
@@ -281,9 +282,10 @@ class WordleGame {
             
             setTimeout(() => {
                 tile.classList.add(guessStatus[i]);
-            }, i * 100);
+            }, i * FLIP_ANIMATION_DELAY);
 
-            // Update keyboard state (only upgrade, never downgrade)
+            // Update keyboard state (prioritize better states: correct > present > absent)
+            // This ensures once a key is marked correct, it stays correct even if the letter appears elsewhere
             const currentState = this.keyboardState[letter];
             if (!currentState || 
                 (currentState === 'absent' && guessStatus[i] !== 'absent') ||
@@ -292,7 +294,7 @@ class WordleGame {
             }
         }
 
-        setTimeout(() => this.updateKeyboard(), this.currentGuess.length * 100);
+        setTimeout(() => this.updateKeyboard(), this.currentGuess.length * FLIP_ANIMATION_DELAY);
     }
 
     updateKeyboard() {
@@ -310,13 +312,14 @@ class WordleGame {
     }
 
     showMessage(text, type) {
+        const ERROR_MESSAGE_DURATION = 2000; // milliseconds
         this.message.textContent = text;
         this.message.className = `message ${type}`;
         if (type === 'error') {
             setTimeout(() => {
                 this.message.textContent = '';
                 this.message.className = 'message';
-            }, 2000);
+            }, ERROR_MESSAGE_DURATION);
         }
     }
 }
