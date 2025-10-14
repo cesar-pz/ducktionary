@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Wordle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Custom Wordle</h1>
+            <button id="mode-toggle" class="btn-secondary">Custom Mode</button>
+        </header>
+
+        <div id="custom-mode" class="custom-mode hidden">
+            <h2>Create Custom Puzzle</h2>
+            <input type="text" id="custom-word" placeholder="Enter word (5-10 letters)" maxlength="10">
+            <button id="start-custom" class="btn-primary">Start Game</button>
+        </div>
+
+        <div id="game-container">
+            <div id="message" class="message"></div>
+            <div id="game-board"></div>
+            <div id="keyboard"></div>
+        </div>
+
+        <div id="stats" class="stats">
+            <p>Attempts: <span id="attempts">0</span>/6</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
