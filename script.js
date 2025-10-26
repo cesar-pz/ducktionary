@@ -60,6 +60,8 @@ class WordleGame {
         this.currentGuess = '';
         this.gameOver = false;
         this.customMode = false;
+        this.isCustomInputActive = false; // Track if custom input is active
+        this.keydownListenerAdded = false; // Ensure keydown listener is added only once
         this.keyboardState = {};
         
         this.initElements();
@@ -80,12 +82,38 @@ class WordleGame {
     }
 
     attachEventListeners() {
-        document.addEventListener('keydown', (e) => this.handleKeyPress(e));
         this.modeToggle.addEventListener('click', () => this.toggleMode());
         this.startCustomBtn.addEventListener('click', () => this.startCustomGame());
         this.customWordInput.addEventListener('input', (e) => {
             e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
         });
+    
+        // Disable main game keyboard actions when the custom input is focused
+        this.customWordInput.addEventListener('focus', () => {
+            this.isCustomInputActive = true;
+        });
+    
+        // Re-enable main game keyboard actions when the custom input loses focus
+        this.customWordInput.addEventListener('blur', () => {
+            this.isCustomInputActive = false;
+        });
+    
+        // Prevent main game actions when typing in the custom input
+        this.customWordInput.addEventListener('keydown', (event) => {
+            event.stopPropagation(); // Prevent the event from reaching the document-level listener
+        });
+    
+        // Dedicated keydown handler for the main game
+        if (!this.keydownListenerAdded) {
+            this.keydownListenerAdded = true;
+            document.addEventListener('keydown', (event) => {
+                if (this.isCustomInputActive) {
+                    // Do nothing if custom input is active
+                    return;
+                }
+                this.handleKeyPress(event); // Main game keyboard actions
+            });
+        }
     }
 
     toggleMode() {
@@ -167,7 +195,7 @@ class WordleGame {
                 if (key === 'ENTER' || key === 'BACK') {
                     keyButton.classList.add('wide');
                 }
-                keyButton.addEventListener('click', () => this.handleKeyClick(key));
+                //keyButton.addEventListener('click', () => this.handleKeyClick(key));
                 rowDiv.appendChild(keyButton);
             });
             this.keyboard.appendChild(rowDiv);
