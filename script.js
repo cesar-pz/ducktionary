@@ -298,11 +298,19 @@ class WordleGame {
     }
 
     updateKeyboard() {
+        // Get all key elements
+        const keys = document.querySelectorAll('#keyboard .key');
+        keys.forEach(key => {
+            // Reset all keys to default class
+            key.classList.remove('correct', 'present', 'absent');
+            key.className = 'key'; // Ensure only the default class remains
+        });
+    
+        // Apply states from keyboardState
         Object.keys(this.keyboardState).forEach(letter => {
             const key = document.getElementById(`key-${letter}`);
-            if (key) {
-                key.className = 'key';
-                key.classList.add(this.keyboardState[letter]);
+            if (key && this.keyboardState[letter]) {
+                key.classList.add(this.keyboardState[letter]); // Add state if it exists
             }
         });
     }
@@ -312,7 +320,7 @@ class WordleGame {
     }
 
     showMessage(text, type) {
-        const ERROR_MESSAGE_DURATION = 2000; // milliseconds
+        const ERROR_MESSAGE_DURATION = 5000; // milliseconds
         this.message.textContent = text;
         this.message.className = `message ${type}`;
         if (type === 'error') {
