@@ -68,6 +68,7 @@ class WordleGame {
         this.initKeyboard();
         this.startRandomGame();
         this.attachEventListeners();
+        this.checkForCustomWordInUrl();
     }
 
     initElements() {
@@ -145,11 +146,34 @@ class WordleGame {
             this.showMessage('Only letters allowed!', 'error');
             return;
         }
+
+        // Encode the word using the passphrase
+        const passphrase = "QUACK";
+        const encodedWord = this.encodeWord(word, passphrase);
+
+        // Update the URL with the encoded word
+        const newUrl = `${window.location.origin}${window.location.pathname}?word=${encodedWord}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
         this.currentWord = word;
         this.customWordInput.value = '';
         this.customModeDiv.classList.add('hidden');
         this.resetGame();
         this.showMessage(`Guess the ${word.length}-letter word!`, 'info');
+    }
+
+    checkForCustomWordInUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const encodedWord = params.get('word');
+        if (encodedWord && /^[A-Z]{5,8}$/.test(encodedWord)) {
+            // Decode the word using the passphrase
+            const passphrase = "QUACK";
+            const word = this.decodeWord(encodedWord, passphrase);
+
+            this.currentWord = word.toUpperCase();
+            this.resetGame();
+            this.showMessage(`Custom word loaded from URL!`, 'info');
+        }
     }
 
     resetGame() {
@@ -357,6 +381,31 @@ class WordleGame {
                 this.message.className = 'message';
             }, ERROR_MESSAGE_DURATION);
         }
+    }
+
+    // Helper to calculate shift values from the passphrase
+    getShiftValues(passphrase) {
+        return passphrase.split('').map(char => char.charCodeAt(0) - 'A'.charCodeAt(0));
+    }
+
+    // Encode a word using the passphrase
+    encodeWord(word, passphrase) {
+        const shifts = this.getShiftValues(passphrase);
+        return word.split('').map((char, index) => {
+            const shift = shifts[index % shifts.length];
+            const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) + shift) % 26) + 'A'.charCodeAt(0);
+            return String.fromCharCode(newCharCode);
+        }).join('');
+    }
+
+    // Decode a word using the passphrase
+    decodeWord(encodedWord, passphrase) {
+        const shifts = this.getShiftValues(passphrase);
+        return encodedWord.split('').map((char, index) => {
+            const shift = shifts[index % shifts.length];
+            const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26) + 'A'.charCodeAt(0);
+            return String.fromCharCode(newCharCode);
+        }).join('');
     }
 }
 
