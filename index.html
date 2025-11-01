@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ducktionary</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ducktionary</h1>
+        </header>
+
+        <div id="custom-mode" class="custom-mode hidden">
+            <h2>Create Custom Puzzle</h2>
+            <input type="text" id="custom-word" placeholder="Enter word (5-8 letters)" maxlength="8">
+            <button id="start-custom" class="btn-primary">Start Game</button>
+        </div>
+
+        <div id="game-container">
+            <div id="message" class="message"></div>
+            <div id="game-board"></div>
+            <div id="keyboard"></div>
+        </div>
+
+        <div id="stats" class="stats">
+            <p>Attempts: <span id="attempts">0</span>/6</p>
+        </div>
+
+        <div id="button-area">
+            <button id="mode-toggle" class="btn-secondary">Custom Mode</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
