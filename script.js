@@ -137,8 +137,8 @@ class WordleGame {
 
     startCustomGame() {
         const word = this.customWordInput.value.trim().toUpperCase();
-        if (word.length < 5 || word.length > 10) {
-            this.showMessage('Word must be 5-10 letters!', 'error');
+        if (word.length < 5 || word.length > 8) {
+            this.showMessage('Word must be 5-8 letters!', 'error');
             return;
         }
         if (!/^[A-Z]+$/.test(word)) {
