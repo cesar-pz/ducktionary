@@ -1,11 +1,12 @@
-# Custom Wordle
+# Ducktionary
 
-A minimal and modern Wordle clone with both random 5-letter word mode (default) and custom word puzzle creation (5-10 letters).
+A minimal and modern Wordle-inspired game with both random 5-letter word mode (default) and custom word puzzle creation (5-10 letters).
+Disclaimer: This repo is not affiliated with The New York Times or any of its subsidiaries.
 
 ## Features
 
 - 🎲 **Random Mode (Default)**: Play with randomly selected 5-letter words
-- ✏️ **Custom Mode**: Create puzzles with words from 5 to 10 letters
+- ✏️ **Custom Mode**: Create puzzles with words from 5 to 8 letters
 - 🎨 **Modern UI**: Clean, minimal design with beautiful gradient background
 - 🎮 **Full Wordle Mechanics**: 
   - Green tiles for correct letters in correct positions
@@ -60,16 +61,6 @@ python3 -m http.server 8080
 - CSS3 (with modern features like gradients, animations, flexbox)
 - Vanilla JavaScript (no frameworks or dependencies)
 
-## Screenshots
-
-### Random 5-Letter Mode (Default)
-![Random Mode](https://github.com/user-attachments/assets/73a2d58c-93e4-4f51-aed2-3e4bd24a4e81)
-
-### Custom Mode Interface
-![Custom Mode](https://github.com/user-attachments/assets/6da101a0-a20e-4aef-80b0-289a3fe7997a)
-
-### Gameplay with 7-Letter Word
-![7-Letter Gameplay](https://github.com/user-attachments/assets/b5f24994-7afa-4539-9c68-3c216d394059)
 
 ### Winning State
 ![Win State](https://github.com/user-attachments/assets/998ff835-e6de-4b1d-8faa-7017a3af7e1d)
