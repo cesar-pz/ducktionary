@@ -278,9 +278,18 @@ class WordleGame {
         }
     }
 
-    submitGuess() {
+    async submitGuess() {
+        if (this.gameOver) return;
+
         if (this.currentGuess.length !== this.currentWord.length) {
             this.showMessage(`Word must be ${this.currentWord.length} letters!`, 'error');
+            return;
+        }
+
+        // Validate the guess against the dictionary
+        const isValid = await this.isValidWord(this.currentGuess);
+        if (!isValid) {
+            this.showMessage('Not a valid word! Try again.', 'error');
             return;
         }
 
@@ -406,6 +415,29 @@ class WordleGame {
             const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26) + 'A'.charCodeAt(0);
             return String.fromCharCode(newCharCode);
         }).join('');
+    }
+
+    // Check if a word is valid in English or Spanish dictionaries
+    async isValidWord(word) {
+        const lowerWord = word.toLowerCase();
+
+        // Check English dictionary
+        try {
+            const enResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${lowerWord}`);
+            if (enResponse.ok) return true;
+        } catch (e) {
+            // Ignore fetch errors, continue to Spanish check
+        }
+
+        // Check Spanish dictionary
+        try {
+            const esResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/es/${lowerWord}`);
+            if (esResponse.ok) return true;
+        } catch (e) {
+            // Ignore fetch errors
+        }
+
+        return false;
     }
 }
 
