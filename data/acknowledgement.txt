@@ -1,0 +1,4 @@
+Most common Spanish words: https://github.com/mazyvan/most-common-spanish-words/blob/master/most-common-spanish-words-v5.txt
+
+Most common English words: https://github.com/dolph/dictionary/blob/master/popular.txt
+
