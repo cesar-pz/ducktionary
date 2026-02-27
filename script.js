@@ -66,9 +66,14 @@ class WordleGame {
         
         this.initElements();
         this.initKeyboard();
-        this.startRandomGame();
         this.attachEventListeners();
+        this.init();
+    }
+
+    async init() {
+        await this.loadDictionary();
         this.checkForCustomWordInUrl();
+        this.startRandomGame();
     }
 
     initElements() {
@@ -81,6 +86,33 @@ class WordleGame {
         this.customWordInput = document.getElementById('custom-word');
         this.startCustomBtn = document.getElementById('start-custom');
     }
+
+    async loadDictionary() {
+        try {
+            const [enResponse, esResponse] = await Promise.all([
+                fetch('data/common-english.txt'), 
+                fetch('data/common-spanish.txt')
+            ]);
+    
+            const enText = await enResponse.text();
+            const esText = await esResponse.text();
+    
+            const enWords = enText.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length > 0);
+            const esWords = esText.split('\n').map(w => w.trim().toUpperCase()).filter(w => w.length > 0);
+    
+            this.dictionary = new Set([...enWords, ...esWords]);
+            console.log(`Dictionary loaded: ${this.dictionary.size} words`);
+        } catch (e) {
+            console.error('Failed to load dictionary:', e);
+            this.dictionary = null; // Fallback: allow all words
+        }
+    }
+
+    isValidWord(word) {
+        if (!this.dictionary) return true; // Fallback if dictionary failed to load
+        return this.dictionary.has(word.toUpperCase());
+    }
+
 
     attachEventListeners() {
         this.modeToggle.addEventListener('click', () => this.toggleMode());
@@ -278,25 +310,29 @@ class WordleGame {
         }
     }
 
-    async submitGuess() {
+    submitGuess() {
         if (this.gameOver) return;
-
+        if (this.submitCooldown) return; // Prevent submission during cooldown
+    
         if (this.currentGuess.length !== this.currentWord.length) {
             this.showMessage(`Word must be ${this.currentWord.length} letters!`, 'error');
             return;
         }
-
-        // Validate the guess against the dictionary
-        const isValid = await this.isValidWord(this.currentGuess);
-        if (!isValid) {
-            this.showMessage('Not a valid word! Try again.', 'error');
+    
+        // Validate the guess against the local dictionary
+        if (!this.isValidWord(this.currentGuess)) {
+            this.submitCooldown = true;
+            this.showMessage('Not a valid word! <span class="cooldown-timer"></span>', 'error');
+            setTimeout(() => {
+                this.submitCooldown = false;
+            }, 2000); // 2 second cooldown
             return;
         }
-
+    
         this.checkGuess();
         this.currentAttempt++;
         this.updateAttempts();
-
+    
         if (this.currentGuess === this.currentWord) {
             this.gameOver = true;
             this.showMessage('🎉 Congratulations! You won!', 'success');
@@ -304,7 +340,7 @@ class WordleGame {
             this.gameOver = true;
             this.showMessage(`Game Over! The word was: ${this.currentWord}`, 'error');
         }
-
+    
         this.currentGuess = '';
     }
 
@@ -381,15 +417,14 @@ class WordleGame {
     }
 
     showMessage(text, type) {
-        const ERROR_MESSAGE_DURATION = 5000; // milliseconds
-        this.message.textContent = text;
+        this.message.innerHTML = text; // Use innerHTML to support the timer span
         this.message.className = `message ${type}`;
-        if (type === 'error') {
-            setTimeout(() => {
-                this.message.textContent = '';
-                this.message.className = 'message';
-            }, ERROR_MESSAGE_DURATION);
-        }
+        
+        clearTimeout(this.messageTimeout);
+        this.messageTimeout = setTimeout(() => {
+            this.message.innerHTML = '';
+            this.message.className = 'message';
+        }, 2000);
     }
 
     // Helper to calculate shift values from the passphrase
@@ -415,29 +450,6 @@ class WordleGame {
             const newCharCode = ((char.charCodeAt(0) - 'A'.charCodeAt(0) - shift + 26) % 26) + 'A'.charCodeAt(0);
             return String.fromCharCode(newCharCode);
         }).join('');
-    }
-
-    // Check if a word is valid in English or Spanish dictionaries
-    async isValidWord(word) {
-        const lowerWord = word.toLowerCase();
-
-        // Check English dictionary
-        try {
-            const enResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${lowerWord}`);
-            if (enResponse.ok) return true;
-        } catch (e) {
-            // Ignore fetch errors, continue to Spanish check
-        }
-
-        // Check Spanish dictionary
-        try {
-            const esResponse = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/es/${lowerWord}`);
-            if (esResponse.ok) return true;
-        } catch (e) {
-            // Ignore fetch errors
-        }
-
-        return false;
     }
 }
 
