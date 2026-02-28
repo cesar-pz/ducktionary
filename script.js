@@ -72,8 +72,8 @@ class WordleGame {
 
     async init() {
         await this.loadDictionary();
-        this.checkForCustomWordInUrl();
         this.startRandomGame();
+        this.checkForCustomWordInUrl();
     }
 
     initElements() {
